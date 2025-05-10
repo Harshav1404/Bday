@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Birthday Wishes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary-color: #ff85a2;
+            --secondary-color: #7b68ee;
+            --accent-color: #ffd700;
+            --text-color: #2f3542;
+            --light-color: #f7f7f7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f0c29;
+            background-image: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+            color: var(--light-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #birthdayCard {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            position: relative;
+            overflow: hidden;
+            display: none; /* Initially hidden, will be shown after form submission */
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+        }
+        
+        .birthday-title {
+            font-family: 'Pacifico', cursive;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .recipient-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .message {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .sender-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-top: 1rem;
+        }
+        
+        .gift-box {
+            width: 120px;
+            height: 120px;
+            background-color: var(--primary-color);
+            position: relative;
+            margin: 2rem auto;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gift-box::before {
+            content: '';
+            width: 120px;
+            height: 25px;
+            background-color: #ff9eb5;
+            position: absolute;
+            top: -25px;
+            left: 0;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .gift-box::after {
+            content: '';
+            width: 25px;
+            height: 120px;
+            background-color: #ff9eb5;
+            position: absolute;
+            top: 0;
+            left: 47.5px;
+        }
+        
+        .gift-lid {
+            width: 140px;
+            height: 30px;
+            background-color: #ff9eb5;
+            position: absolute;
+            top: -55px;
+            left: -10px;
+            border-radius: 5px 5px 0 0;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease, top 0.5s ease;
+        }
+        
+        .gift-box:hover .gift-lid {
+            transform: translateZ(0) rotate(-20deg);
+            top: -75px;
+        }
+        
+        .confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            z-index: 10;
+        }
+        
+        /* Form Styling */
+        #birthdayForm {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--light-color);
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(123, 104, 238, 0.4);
+        }
+        
+        button:hover {
+            background-color: #6a5acd;
+            transform: translateY(-3px);
+        }
+        
+        /* Preview section for background selection */
+        .bg-preview {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+        
+        .bg-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+        
+        .bg-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .bg-option.selected {
+            border: 3px solid var(--accent-color);
+        }
+        
+        .bg-1 {
+            background-image: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+        }
+        
+        .bg-2 {
+            background-image: linear-gradient(to right, #ff758c, #ff7eb3);
+        }
+        
+        .bg-3 {
+            background-image: linear-gradient(to right, #11998e, #38ef7d);
+        }
+        
+        .bg-4 {
+            background-image: linear-gradient(to right, #8e2de2, #4a00e0);
+        }
+        
+        /* Fireworks effect */
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 16px;
+            color: var(--primary-color);
+            pointer-events: none;
+            z-index: 2;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        
+        /* Animations for birthday message reveal */
+        .reveal-text {
+            opacity: 0;
+            animation: fadeInUp 1s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .birthday-title {
+                font-size: 2.5rem;
+            }
+            
+            .recipient-name {
+                font-size: 2rem;
+            }
+            
+            .message {
+                font-size: 1rem;
+            }
+            
+            .sender-name {
+                font-size: 1.5rem;
+            }
+            
+            #birthdayCard {
+                padding: 1.5rem;
+            }
+            
+            .gift-box, .gift-box::before {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .gift-box::before {
+                height: 20px;
+                top: -20px;
+            }
+            
+            .gift-box::after {
+                width: 20px;
+                height: 80px;
+                left: 30px;
+            }
+            
+            .gift-lid {
+                width: 100px;
+                height: 25px;
+                top: -45px;
+                left: -10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="birthday-title animate__animated animate__heartBeat">Create a Birthday Surprise!</h1>
+        
+        <form id="birthdayForm">
+            <div class="form-group">
+                <label for="recipientName">Birthday Person's Name:</label>
+                <input type="text" id="recipientName" required placeholder="Enter the name of the birthday person">
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Your Birthday Message:</label>
+                <textarea id="message" required placeholder="Write your special birthday message here..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="senderName">Your Name:</label>
+                <input type="text" id="senderName" required placeholder="Enter your name">
+            </div>
+            
+            <div class="form-group">
+                <label>Choose Background Theme:</label>
+                <div class="bg-preview">
+                    <div class="bg-option bg-1 selected" data-bg="0f0c29,302b63,24243e"></div>
+                    <div class="bg-option bg-2" data-bg="ff758c,ff7eb3"></div>
+                    <div class="bg-option bg-3" data-bg="11998e,38ef7d"></div>
+                    <div class="bg-option bg-4" data-bg="8e2de2,4a00e0"></div>
+                </div>
+            </div>
+            
+            <button type="submit">Create Birthday Card</button>
+        </form>
+        
+        <div id="birthdayCard">
+            <h1 class="birthday-title animate__animated animate__heartBeat">Happy Birthday!</h1>
+            <h2 class="recipient-name animate__animated animate__tada" id="cardRecipientName"></h2>
+            
+            <div class="gift-box">
+                <div class="gift-lid"></div>
+            </div>
+            
+            <p class="message" id="cardMessage"></p>
+            
+            <p class="sender-name">With love,</p>
+            <p class="sender-name" id="cardSenderName"></p>
+        </div>
+        
+        <div class="confetti-container" id="confettiContainer"></div>
+        
+        <audio id="birthdaySong" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('birthdayForm');
+            const card = document.getElementById('birthdayCard');
+            const recipientNameInput = document.getElementById('recipientName');
+            const messageInput = document.getElementById('message');
+            const senderNameInput = document.getElementById('senderName');
+            const cardRecipientName = document.getElementById('cardRecipientName');
+            const cardMessage = document.getElementById('cardMessage');
+            const cardSenderName = document.getElementById('cardSenderName');
+            const confettiContainer = document.getElementById('confettiContainer');
+            const birthdaySong = document.getElementById('birthdaySong');
+            const bgOptions = document.querySelectorAll('.bg-option');
+            let selectedBg = '0f0c29,302b63,24243e'; // Default background
+            
+            // Background selection
+            bgOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    bgOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedBg = this.getAttribute('data-bg');
+                });
+            });
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const recipientName = recipientNameInput.value;
+                const message = messageInput.value;
+                const senderName = senderNameInput.value;
+                
+                // Update card with form values
+                cardRecipientName.textContent = recipientName;
+                cardMessage.textContent = message;
+                cardSenderName.textContent = senderName;
+                
+                // Hide form and show card
+                form.style.display = 'none';
+                card.style.display = 'block';
+                
+                // Apply animation classes to reveal text elements
+                setTimeout(() => {
+                    document.querySelectorAll('#birthdayCard > *').forEach((el, index) => {
+                        setTimeout(() => {
+                            el.classList.add('reveal-text');
+                        }, index * 300);
+                    });
+                }, 500);
+                
+                // Change background
+                const bgColors = selectedBg.split(',');
+                document.body.style.backgroundImage = `linear-gradient(to right, #${bgColors[0]}, #${bgColors[1]}${bgColors[2] ? `, #${bgColors[2]}` : ''})`;
+                
+                // Create confetti
+                createConfetti();
+                
+                // Start birthday song
+                birthdaySong.play();
+                
+                // Create fireworks effect
+                setInterval(createFirework, 800);
+                
+                // Create floating hearts
+                setInterval(createHeart, 1000);
+                
+                // Create sparkles in the card
+                createSparkles();
+            });
+            
+            function createConfetti() {
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    // Random color
+                    const colors = ['#ff85a2', '#7b68ee', '#ffd700', '#7ed957', '#5eaefd'];
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.backgroundColor = randomColor;
+                    
+                    // Random position
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = -Math.random() * 40 - 20 + 'px';
+                    
+                    // Random size
+                    const size = Math.random() * 10 + 5;
+                    confetti.style.width = size + 'px';
+                    confetti.style.height = size + 'px';
+                    
+                    // Random shape
+                    const shapes = ['50%', '0%']; // Circle or square
+                    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+                    confetti.style.borderRadius = randomShape;
+                    
+                    // Random animation
+                    const animationDuration = Math.random() * 3 + 2;
+                    confetti.style.animation = `fall ${animationDuration}s linear infinite`;
+                    confetti.style.animationDelay = Math.random() * 5 + 's';
+                    
+                    // Add confetti to container
+                    confettiContainer.appendChild(confetti);
+                }
+            }
+            
+            function createFirework() {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                
+                // Random position
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random()  (window.innerHeight  0.7);
+                firework.style.left = posX + 'px';
+                firework.style.top = posY + 'px';
+                
+                // Random color
+                const colors = ['#ff85a2', '#7b68ee', '#ffd700', '#7ed957', '#5eaefd'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                firework.style.backgroundColor = randomColor;
+                
+                // Add to body
+                document.body.appendChild(firework);
+                
+                // Create explosion particles
+                setTimeout(() => {
+                    createExplosion(posX, posY, randomColor);
+                    firework.remove();
+                }, 300);
+            }
+            
+            function createExplosion(x, y, color) {
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'firework';
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.backgroundColor = color;
+                    
+                    // Random direction
+                    const angle = Math.random()  Math.PI  2;
+                    const distance = Math.random() * 100 + 50;
+                    const speedX = Math.cos(angle) * distance / 40;
+                    const speedY = Math.sin(angle) * distance / 40;
+                    
+                    // Animation
+                    particle.animate([
+                        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                        { transform: `translate(${speedX  40}px, ${speedY  40}px) scale(0)`, opacity: 0 }
+                    ], {
+                        duration: Math.random() * 1000 + 500,
+                        easing: 'cubic-bezier(0, .9, .57, 1)'
+                    });
+                    
+                    document.body.appendChild(particle);
+                    
+                    // Remove particle after animation
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 1500);
+                }
+            }
+            
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤';
+                
+                // Random position
+                const posX = Math.random() * window.innerWidth;
+                const posY = window.innerHeight;
+                heart.style.left = posX + 'px';
+                heart.style.top = posY + 'px';
+                
+                // Random size
+                const size = Math.random() * 20 + 10;
+                heart.style.fontSize = size + 'px';
+                
+                // Random color
+                const colors = ['#ff85a2', '#ff5e78', '#ff3456'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                heart.style.color = randomColor;
+                
+                // Animation
+                heart.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(-${window.innerHeight + 100}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 5000 + 5000,
+                    easing: 'ease-out'
+                });
+                
+                document.body.appendChild(heart);
+                
+                // Remove heart after animation
+                setTimeout(() => {
+                    heart.remove();
+                }, 10000);
+            }
+            
+            function createSparkles() {
+                for (let i = 0; i < 30; i++) {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    
+                    // Random position within card
+                    const cardRect = card.getBoundingClientRect();
+                    const posX = Math.random() * cardRect.width;
+                    const posY = Math.random() * cardRect.height;
+                    sparkle.style.left = posX + 'px';
+                    sparkle.style.top = posY + 'px';
+                    
+                    // Pulsating animation
+                    sparkle.animate([
+                        { transform: 'scale(0)', opacity: 0 },
+                        { transform: 'scale(1)', opacity: 1 },
+                        { transform: 'scale(0)', opacity: 0 }
+                    ], {
+                        duration: Math.random() * 2000 + 1000,
+                        iterations: Infinity
+                    });
+                    
+                    card.appendChild(sparkle);
+                }
+            }
+        });
+        
+        // Add CSS animation for falling confetti
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fall {
+                0% {
+                    transform: translateY(-10px) rotate(0deg);
+                }
+                100% {
+                    transform: translateY(100vh) rotate(360deg);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
